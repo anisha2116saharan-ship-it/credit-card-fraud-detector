@@ -33,9 +33,15 @@ def get_trained_model():
 
 model = get_trained_model()
 
-# 3. Sidebar Controls for Inputs
+# 3. Sidebar Controls for Inputs (Configured for INR ₹)
 st.sidebar.header("🔍 Input Transaction Parameters")
-amount = st.sidebar.number_input("Transaction Amount ($)", min_value=1.0, max_value=10000.0, value=250.0, step=10.0)
+amount = st.sidebar.number_input(
+    "Transaction Amount (₹)", 
+    min_value=10.0, 
+    max_value=500000.0, 
+    value=5000.0, 
+    step=500.0
+)
 
 st.sidebar.subheader("PCA Anonymized Features")
 v1 = st.sidebar.slider("Signal V1", -5.0, 5.0, 0.2)
@@ -43,7 +49,7 @@ v2 = st.sidebar.slider("Signal V2", -5.0, 5.0, -1.1)
 v3 = st.sidebar.slider("Signal V3", -5.0, 5.0, 2.0)
 v4 = st.sidebar.slider("Signal V4", -5.0, 5.0, -0.5)
 
-# Assemble feature vector (fill remaining with baseline values)
+# Assemble feature vector
 transaction_features = np.zeros((1, 20))
 transaction_features[0, 0] = v1
 transaction_features[0, 1] = v2
@@ -57,7 +63,7 @@ with col1:
     st.subheader("Transaction Summary")
     summary_df = pd.DataFrame({
         "Parameter": ["Amount", "Signal V1", "Signal V2", "Signal V3", "Signal V4"],
-        "Value": [f"${amount:.2f}", v1, v2, v3, v4]
+        "Value": [f"₹{amount:,.2f}", v1, v2, v3, v4]
     })
     st.table(summary_df)
 
@@ -71,7 +77,7 @@ with col2:
 
         if prediction == 1 or prob >= 50.0:
             st.error("🚨 **ALERT: High Risk of Fraudulent Transaction Detected!**")
-            st.write("Recommendation: Block transaction and trigger multi-factor authentication (MFA).")
+            st.write("Recommendation: Block transaction and trigger multi-factor authentication (OTP/MFA).")
         else:
             st.success("✅ **APPROVED: Transaction appears legitimate.**")
             st.write("Recommendation: Process transaction normally.")
